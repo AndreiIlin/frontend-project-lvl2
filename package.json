@@ -2,7 +2,7 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "my-second-hexlet-project",
-  "main": "index.js",
+  "main": "src/difference.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -18,9 +18,17 @@
   },
   "homepage": "https://github.com/AndreiIlin/frontend-project-lvl2#readme",
   "dependencies": {
-    "commander": "^8.3.0"
+    "commander": "^8.3.0",
+    "lodash": "^4.17.21",
+    "process": "^0.11.10"
   },
   "bin": {
     "gendiff": "bin/gendiff.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.3",
+    "src": "^1.1.2"
   }
 }
