@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { readFileSync } from 'fs';
+import * as fs from 'fs';
 import * as path from 'path';
 import process from 'process';
 import genDiff from '../src/genDiff.js';
@@ -14,8 +14,8 @@ program
   .arguments('<filepath1> <filepath2>')
   .action((filepath1, filepath2) => {
     console.log(`{ \n${genDiff(
-      JSON.parse(readFileSync(path.resolve(process.cwd(), './src/', filepath1), 'utf-8')),
-      JSON.parse(readFileSync(path.resolve(process.cwd(), './src/', filepath2), 'utf-8')),
+      JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'src', filepath1), 'utf-8')),
+      JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'src', filepath2), 'utf-8')),
     )} \n}`);
   });
 program.parse();
