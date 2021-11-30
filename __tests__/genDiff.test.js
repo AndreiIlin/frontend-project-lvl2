@@ -1,50 +1,238 @@
-import * as path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 import genDiff from '../src/genDiff.js';
-import startParse from '../src/parsers.js';
+import readFile from '../src/readFile.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
-const readFile = (filename) => startParse(getFixturePath(filename));
 test('diff1', () => {
-  const file1 = readFile('file1.json');
-  const file2 = readFile('file2.json');
-  expect(genDiff(file1, file2)).toMatch('- age: 18\n+ age: 16\n  name: Ivan\n- student: true\n+ student: false');
+  const actual = genDiff({ one: 'two' }, { next: 5 });
+  const expected = [
+    {
+      key: 'next',
+      value: 5,
+      sign: '+',
+      depth: 1,
+    },
+    {
+      key: 'one',
+      value: 'two',
+      sign: '-',
+      depth: 1,
+    },
+  ];
+  expect(actual).toEqual(expected);
 });
 test('diff2', () => {
-  const file1 = readFile('file1.json');
-  const file2 = readFile('file3.json');
-  expect(genDiff(file1, file2)).toMatch('- age: 18\n- name: Ivan\n- student: true');
+  const actual = genDiff({ one: 'two' }, {});
+  const expected = [
+    {
+      key: 'one',
+      value: 'two',
+      sign: '-',
+      depth: 1,
+    },
+  ];
+  expect(actual).toEqual(expected);
 });
 test('diff3', () => {
-  const file1 = readFile('file3.json');
-  const file2 = readFile('file2.json');
-  expect(genDiff(file1, file2)).toMatch('+ age: 16\n+ name: Ivan\n+ student: false');
+  const actual = genDiff({}, { next: 5 });
+  const expected = [
+    {
+      key: 'next',
+      value: 5,
+      sign: '+',
+      depth: 1,
+    },
+  ];
+  expect(actual).toEqual(expected);
 });
 test('diff4', () => {
-  const file1 = readFile('file3.json');
-  const file2 = readFile('file3.json');
-  expect(genDiff(file1, file2)).toMatch('');
+  const actual = genDiff({ one: 'two' }, { one: 'two' });
+  const expected = [
+    {
+      key: 'one',
+      value: 'two',
+      sign: '=',
+      depth: 1,
+    },
+  ];
+  expect(actual).toEqual(expected);
 });
 test('diff5', () => {
-  const file1 = readFile('file1.yml');
-  const file2 = readFile('file2.yaml');
-  expect(genDiff(file1, file2)).toMatch('- age: 18\n+ age: 16\n  name: Ivan\n- student: true\n+ student: false');
+  const actual = genDiff({ one: { two: 'two' } }, { one: { two: 'two' } });
+  const expected = [
+    {
+      key: 'one',
+      sign: '=',
+      depth: 1,
+    },
+    {
+      key: 'two',
+      value: 'two',
+      sign: '=',
+      depth: 2,
+    },
+  ];
+  expect(actual).toEqual(expected);
 });
 test('diff6', () => {
-  const file1 = readFile('file1.yml');
-  const file2 = readFile('file3.yml');
-  expect(genDiff(file1, file2)).toMatch('- age: 18\n- name: Ivan\n- student: true');
+  const actual = genDiff({ one: { two: 'two' } }, { one: { three: 'two' } });
+  const expected = [
+    {
+      key: 'one',
+      sign: '=',
+      depth: 1,
+    },
+    {
+      key: 'three',
+      value: 'two',
+      sign: '+',
+      depth: 2,
+    },
+    {
+      key: 'two',
+      value: 'two',
+      sign: '-',
+      depth: 2,
+    },
+  ];
+  expect(actual).toEqual(expected);
 });
 test('diff7', () => {
-  const file1 = readFile('file3.yml');
-  const file2 = readFile('file2.yaml');
-  expect(genDiff(file1, file2)).toMatch('+ age: 16\n+ name: Ivan\n+ student: false');
+  const actual = genDiff({ one: { three: 'two' } }, { one: { two: 'two' } });
+  const expected = [
+    {
+      key: 'one',
+      sign: '=',
+      depth: 1,
+    },
+    {
+      key: 'three',
+      value: 'two',
+      sign: '-',
+      depth: 2,
+    },
+    {
+      key: 'two',
+      value: 'two',
+      sign: '+',
+      depth: 2,
+    },
+  ];
+  expect(actual).toEqual(expected);
 });
 test('diff8', () => {
-  const file1 = readFile('file3.yml');
-  const file2 = readFile('file3.yml');
-  expect(genDiff(file1, file2)).toMatch('');
+  const actual = genDiff({ one: { two: 'three' } }, { one: { two: 'two' } });
+  const expected = [
+    {
+      key: 'one',
+      sign: '=',
+      depth: 1,
+    },
+    {
+      key: 'two',
+      value: 'three',
+      sign: '-',
+      depth: 2,
+    },
+    {
+      key: 'two',
+      value: 'two',
+      sign: '+',
+      depth: 2,
+    },
+  ];
+  expect(actual).toEqual(expected);
+});
+test('diff9', () => {
+  const actual = genDiff({ one: { two: 'two' } }, { one: { two: 'three' } });
+  const expected = [
+    {
+      key: 'one',
+      sign: '=',
+      depth: 1,
+    },
+    {
+      key: 'two',
+      value: 'two',
+      sign: '-',
+      depth: 2,
+    },
+    {
+      key: 'two',
+      value: 'three',
+      sign: '+',
+      depth: 2,
+    },
+  ];
+  expect(actual).toEqual(expected);
+});
+test('diff10', () => {
+  const actual = genDiff({ one: { two: 'three' } }, {});
+  const expected = [
+    {
+      key: 'one',
+      sign: '-',
+      depth: 1,
+    },
+    {
+      key: 'two',
+      value: 'three',
+      depth: 2,
+    },
+  ];
+  expect(actual).toEqual(expected);
+});
+test('diff11', () => {
+  const actual = genDiff({}, { one: { two: 'three' } });
+  const expected = [
+    {
+      key: 'one',
+      sign: '+',
+      depth: 1,
+    },
+    {
+      key: 'two',
+      value: 'three',
+      depth: 2,
+    },
+  ];
+  expect(actual).toEqual(expected);
+});
+test('diff12', () => {
+  const actual = genDiff({ one: { two: { three: 'three' } } }, readFile('file3.json'));
+  const expected = [
+    {
+      key: 'one',
+      sign: '-',
+      depth: 1,
+    },
+    {
+      key: 'two',
+      depth: 2,
+    },
+    {
+      key: 'three',
+      value: 'three',
+      depth: 3,
+    },
+  ];
+  expect(actual).toEqual(expected);
+});
+test('diff13', () => {
+  const actual = genDiff(readFile('file3.yml'), { one: { two: { three: 'three' } } });
+  const expected = [
+    {
+      key: 'one',
+      sign: '+',
+      depth: 1,
+    },
+    {
+      key: 'two',
+      depth: 2,
+    },
+    {
+      key: 'three',
+      value: 'three',
+      depth: 3,
+    },
+  ];
+  expect(actual).toEqual(expected);
 });
