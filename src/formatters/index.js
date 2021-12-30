@@ -7,6 +7,8 @@ const formatFile = (format, file) => {
       return stylish(file);
     case 'plain':
       return plain(file);
+    case 'json':
+      return JSON.stringify(file);
     default:
       return new Error(`Unknown formatter '${format}', you can choose exist formatters 'stylish' or 'plain'`);
   }

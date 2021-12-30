@@ -33,3 +33,18 @@ test('plain JSON & YAML', () => {
   const expected = readFile('plain.txt');
   expect(actual).toEqual(expected);
 });
+test('json JSON', () => {
+  const actual = JSON.stringify(getDifference(readParsedFile('file1.json'), readParsedFile('file2.json')));
+  const expected = readFile('json.txt');
+  expect(actual).toEqual(expected);
+});
+test('json YAML', () => {
+  const actual = JSON.stringify(getDifference(readParsedFile('file1.yml'), readParsedFile('file2.yaml')));
+  const expected = readFile('json.txt');
+  expect(actual).toEqual(expected);
+});
+test('json JSON & YAML', () => {
+  const actual = JSON.stringify(getDifference(readParsedFile('file1.json'), readParsedFile('file2.yaml')));
+  const expected = readFile('json.txt');
+  expect(actual).toEqual(expected);
+});
