@@ -1,18 +1,13 @@
 import _ from 'lodash';
 
-const stylish = (file, replacer = '  ', spacesCount = 1) => {
+const stylish = (content, replacer = '  ', spacesCount = 1) => {
   const iter = (row, depth) => {
     const indentSize = depth * spacesCount;
     const indent = replacer.repeat(indentSize);
     const bracketIndent = replacer.repeat(indentSize - spacesCount);
     if (_.isArray(row)) {
-      const lines1 = row
-        .map((value) => iter(value, depth)).join('\n');
-      return [
-        '{',
-        lines1,
-        `${bracketIndent}}`,
-      ].join('\n');
+      const lines1 = row.map((value) => iter(value, depth)).join('\n');
+      return ['{', lines1, `${bracketIndent}}`].join('\n');
     }
     if (_.isObject(row)) {
       switch (row.diff) {
@@ -28,12 +23,14 @@ const stylish = (file, replacer = '  ', spacesCount = 1) => {
           return `${indent}  ${row.key}: ${iter(row.value, depth + 2)}`;
         case 'deleted':
           return `${indent}- ${row.key}: ${iter(row.value, depth + 2)}`;
-        default:
+        case 'added':
           return `${indent}+ ${row.key}: ${iter(row.value, depth + 2)}`;
+        default:
+          return new Error(`Unknown diff value: '${row.diff}'!`);
       }
     }
     return row;
   };
-  return iter(file, 1);
+  return iter(content, 1);
 };
 export default stylish;

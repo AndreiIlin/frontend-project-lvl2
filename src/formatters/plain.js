@@ -1,7 +1,8 @@
 import _ from 'lodash';
 
-const isString = (value) => (typeof value === 'string' ? `'${value}'` : value);
-const plain = (file) => {
+const isStringValue = (value) => typeof value === 'string';
+const getValue = (value) => (isStringValue(value) ? `'${value}'` : value);
+const plain = (content) => {
   const iter = (row, path) => {
     if (_.isArray(row)) {
       return row
@@ -17,18 +18,18 @@ const plain = (file) => {
         row.deletedValue = ['[complex value]'];
       }
       if (row.diff === 'added') {
-        return `Property '${path + row.key}' was added with value: ${isString(row.value)}`;
+        return `Property '${path + row.key}' was added with value: ${getValue(row.value)}`;
       }
       if (row.diff === 'deleted') {
         return `Property '${path + row.key}' was removed`;
       }
       if (_.has(row, 'deletedValue')) {
-        return `Property '${path + row.key}' was updated. From ${isString(row.deletedValue)} to ${isString(row.addedValue)}`;
+        return `Property '${path + row.key}' was updated. From ${getValue(row.deletedValue)} to ${getValue(row.addedValue)}`;
       }
       return iter(row.value, `${path + row.key}.`);
     }
     return null;
   };
-  return iter(file, '');
+  return iter(content, '');
 };
 export default plain;

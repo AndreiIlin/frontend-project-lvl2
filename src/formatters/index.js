@@ -1,16 +1,16 @@
 import stylish from './stylish.js';
 import plain from './plain.js';
 
-const formatFile = (format, file) => {
+const getFormattedFile = (format, content) => {
   switch (format) {
     case 'stylish':
-      return stylish(file);
+      return stylish(content);
     case 'plain':
-      return plain(file);
+      return plain(content);
     case 'json':
-      return JSON.stringify(file);
+      return JSON.stringify(content);
     default:
-      return new Error(`Unknown formatter '${format}', you can choose exist formatters 'stylish' or 'plain'`);
+      return new Error(`Unknown formatter '${format}', you can choose exist formatters 'stylish', 'plain' or 'json'`);
   }
 };
-export default formatFile;
+export default getFormattedFile;
