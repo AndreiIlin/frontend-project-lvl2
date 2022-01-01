@@ -9,7 +9,7 @@ test('stylish JSON', () => {
   expect(actual).toEqual(expected);
 });
 test('stylish YAML', () => {
-  const actual = stylish(getDifference(readParsedFile('file1.yml'), readParsedFile('file2.yaml')));
+  const actual = stylish(getDifference(readParsedFile('file1.yaml'), readParsedFile('file2.yaml')));
   const expected = readFile('stylish.txt');
   expect(actual).toEqual(expected);
 });
@@ -24,7 +24,7 @@ test('plain JSON', () => {
   expect(actual).toEqual(expected);
 });
 test('plain YAML', () => {
-  const actual = plain(getDifference(readParsedFile('file1.yml'), readParsedFile('file2.yaml')));
+  const actual = plain(getDifference(readParsedFile('file1.yaml'), readParsedFile('file2.yaml')));
   const expected = readFile('plain.txt');
   expect(actual).toEqual(expected);
 });
@@ -39,7 +39,7 @@ test('json JSON', () => {
   expect(actual).toEqual(expected);
 });
 test('json YAML', () => {
-  const actual = JSON.stringify(getDifference(readParsedFile('file1.yml'), readParsedFile('file2.yaml')));
+  const actual = JSON.stringify(getDifference(readParsedFile('file1.yaml'), readParsedFile('file2.yaml')));
   const expected = readFile('json.txt');
   expect(actual).toEqual(expected);
 });
