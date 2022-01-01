@@ -15,4 +15,3 @@ rules:
   no-underscore-dangle: [ 2, { "allow": [ "__filename", "__dirname" ] } ]
   no-unused-expressions: ["error", { "allowTernary": true }]
   no-param-reassign: 0
-  max-len:  0

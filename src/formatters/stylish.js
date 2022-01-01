@@ -6,8 +6,8 @@ const stylish = (content, replacer = '  ', spacesCount = 1) => {
     const indent = replacer.repeat(indentSize);
     const bracketIndent = replacer.repeat(indentSize - spacesCount);
     if (_.isArray(row)) {
-      const lines1 = row.map((value) => iter(value, depth)).join('\n');
-      return ['{', lines1, `${bracketIndent}}`].join('\n');
+      const lines = row.map((value) => iter(value, depth)).join('\n');
+      return ['{', lines, `${bracketIndent}}`].join('\n');
     }
     if (_.isObject(row)) {
       switch (row.diff) {
