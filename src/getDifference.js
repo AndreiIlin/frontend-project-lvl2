@@ -25,9 +25,6 @@ const getDifference = (filepath1, filepath2) => {
     } else if (_.isObject(filepath1[key]) && !_.has(filepath2, key)) {
       result.diff = 'deleted';
       result.value = getNotComparedValue(filepath1[key]);
-    } else if (_.isObject(filepath1[key]) && !_.has(filepath2, key)) {
-      result.diff = 'deleted';
-      result.value = getNotComparedValue(filepath1[key]);
     } else if (_.isObject(filepath2[key]) && !_.has(filepath1, key)) {
       result.diff = 'added';
       result.value = getNotComparedValue(filepath2[key]);
