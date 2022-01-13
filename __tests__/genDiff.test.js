@@ -1,8 +1,14 @@
+import path from 'path';
+import fs from 'fs';
 import getDifference from '../src/getDifference.js';
 import stylish from '../src/formatters/stylish.js';
 import plain from '../src/formatters/plain.js';
-import { readTestFile, readParsedTestFile } from '../src/readFile.js';
+import startParse from '../src/parsers.js';
+import { format } from '../src/readFile.js';
 
+const getFixturePath = (filename) => path.resolve('__fixtures__', filename);
+const readTestFile = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
+const readParsedTestFile = (filename) => startParse(readTestFile(filename), format(filename));
 test('stylish JSON', () => {
   const actual = stylish(getDifference(readParsedTestFile('file1.json'), readParsedTestFile('file2.json')));
   const expected = readTestFile('stylish.txt');

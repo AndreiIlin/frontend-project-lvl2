@@ -56,14 +56,14 @@ Use command `gendiff --format plain <filepath1> <filepath2>`
 
 JSON format show the difference as a file format JSON, with all the internal logic of file comparison
 
-There are 5 types of diff values:
+There are 5 statuses of values:
 * added (was only in second file)
 * deleted (was only in first file)
 * changed (was in both files, but was changed, with added and deleted values)
 * unchaged (was the same in both files)
-* notCompaed (the value was not compared)
+* node (is node with a child values)
 
 Use command `gendiff --format json <filepath1> <filepath2>`
 
 **Example of comparing two files:**
-[![asciicast](https://asciinema.org/a/nWd2sAs516fBlskOkfNObRf7R.png)](https://asciinema.org/a/nWd2sAs516fBlskOkfNObRf7R)
+[![asciicast](https://asciinema.org/a/DIvJXpVQQIgNpb2Ql3UTKld1r.png)](https://asciinema.org/a/DIvJXpVQQIgNpb2Ql3UTKld1r)

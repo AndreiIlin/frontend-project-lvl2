@@ -4,7 +4,7 @@ const getValue = (value) => {
   switch (true) {
     case typeof value === 'string':
       return `'${value}'`;
-    case _.get(value, '[0].diff') === 'notCompared':
+    case _.isObject(value):
       return '[complex value]';
     default:
       return value;
@@ -18,15 +18,15 @@ const plain = (content) => {
         .filter((n) => n).join('\n');
     }
     if (_.isObject(row)) {
-      switch (true) {
-        case row.diff === 'added':
-          return `Property '${path + row.key}' was added with value: ${getValue(row.value)}`;
-        case row.diff === 'deleted':
+      switch (row.status) {
+        case 'added':
+          return `Property '${path + row.key}' was added with value: ${getValue(row.addedValue)}`;
+        case 'deleted':
           return `Property '${path + row.key}' was removed`;
-        case _.has(row, 'deletedValue'):
+        case 'changed':
           return `Property '${path + row.key}' was updated. From ${getValue(row.deletedValue)} to ${getValue(row.addedValue)}`;
         default:
-          return iter(row.value, `${path + row.key}.`);
+          return iter(row.children, `${path + row.key}.`);
       }
     }
     return null;
