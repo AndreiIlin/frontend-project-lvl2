@@ -4,12 +4,6 @@ const getDifference = (filepath1, filepath2) => {
   const keys = _.sortBy(_.union(_.keys(filepath1), _.keys(filepath2)));
   return keys.map((key) => {
     switch (true) {
-      case _.isObject(filepath1[key]) && _.isObject(filepath2[key]):
-        return {
-          key,
-          status: 'node',
-          children: getDifference(filepath1[key], filepath2[key]),
-        };
       case !_.has(filepath1, key):
         return {
           key,
@@ -22,7 +16,13 @@ const getDifference = (filepath1, filepath2) => {
           status: 'deleted',
           deletedValue: filepath1[key],
         };
-      case _.has(filepath1, key) && _.has(filepath2, key) && filepath1[key] !== filepath2[key]:
+      case _.isPlainObject(filepath1[key]) && _.isPlainObject(filepath2[key]):
+        return {
+          key,
+          status: 'node',
+          children: getDifference(filepath1[key], filepath2[key]),
+        };
+      case filepath1[key] !== filepath2[key]:
         return {
           key,
           status: 'changed',

@@ -1,35 +1,44 @@
 import _ from 'lodash';
 
-const stylish = (content, replacer = '  ', spacesCount = 1) => {
+const getIndent = (depth) => {
+  const spacesCount = 1;
+  const replacer = '  ';
+  const indentSize = depth * spacesCount;
+  const CurrentIndent = replacer.repeat(indentSize);
+  const bracketIndent = replacer.repeat(indentSize - spacesCount);
+  return [CurrentIndent, bracketIndent];
+};
+const getValue = (row, depth) => {
+  if (_.isPlainObject(row)) {
+    const [CurrentIndent, bracketIndent] = getIndent(depth);
+    const notComparedLines = Object.entries(row).map(([key, val]) => `${CurrentIndent}  ${key}: ${getValue(val, depth + 2)}`);
+    return ['{', ...notComparedLines, `${bracketIndent}}`].join('\n');
+  }
+  return row;
+};
+const stylish = (content) => {
   const iter = (row, depth) => {
-    const indentSize = depth * spacesCount;
-    const indent = replacer.repeat(indentSize);
-    const bracketIndent = replacer.repeat(indentSize - spacesCount);
-    if (_.isArray(row)) {
-      const linesOfArrays = row.map((value) => iter(value, depth)).join('\n');
-      return ['{', linesOfArrays, `${bracketIndent}}`].join('\n');
-    }
-    if (_.isObject(row)) {
-      const linesOfObjects = Object.entries(row).map(([key, val]) => `${indent}  ${key}: ${iter(val, depth + 2)}`).join('\n');
-      switch (row.status) {
+    const [CurrentIndent, bracketIndent] = getIndent(depth);
+    const lines = row.map((value) => {
+      switch (value.status) {
         case 'changed':
           return [
-            `${indent}- ${row.key}: ${iter(row.deletedValue, depth + 2)}`,
-            `${indent}+ ${row.key}: ${iter(row.addedValue, depth + 2)}`,
+            `${CurrentIndent}- ${value.key}: ${getValue(value.deletedValue, depth + 2)}`,
+            `${CurrentIndent}+ ${value.key}: ${getValue(value.addedValue, depth + 2)}`,
           ].join('\n');
         case 'deleted':
-          return `${indent}- ${row.key}: ${iter(row.deletedValue, depth + 2)}`;
+          return `${CurrentIndent}- ${value.key}: ${getValue(value.deletedValue, depth + 2)}`;
         case 'added':
-          return `${indent}+ ${row.key}: ${iter(row.addedValue, depth + 2)}`;
+          return `${CurrentIndent}+ ${value.key}: ${getValue(value.addedValue, depth + 2)}`;
         case 'node':
-          return `${indent}  ${row.key}: ${iter(row.children, depth + 2)}`;
+          return `${CurrentIndent}  ${value.key}: ${iter(value.children, depth + 2)}`;
         case 'unchanged':
-          return `${indent}  ${row.key}: ${iter(row.value, depth + 2)}`;
+          return `${CurrentIndent}  ${value.key}: ${getValue(value.value, depth + 2)}`;
         default:
-          return ['{', linesOfObjects, `${bracketIndent}}`].join('\n');
+          return new Error(`Unknown status ${value.status}`);
       }
-    }
-    return row;
+    });
+    return ['{', ...lines, `${bracketIndent}}`].join('\n');
   };
   return iter(content, 1);
 };
