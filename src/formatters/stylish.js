@@ -1,39 +1,37 @@
 import _ from 'lodash';
 
 const getIndent = (depth) => {
-  const spacesCount = 1;
-  const replacer = '  ';
-  const indentSize = depth * spacesCount;
-  const CurrentIndent = replacer.repeat(indentSize);
-  const bracketIndent = replacer.repeat(indentSize - spacesCount);
-  return [CurrentIndent, bracketIndent];
+  const replacer = '    ';
+  const currentIndent = replacer.repeat(depth);
+  const bracketIndent = replacer.repeat(depth - 1);
+  return [currentIndent, bracketIndent];
 };
 const getValue = (row, depth) => {
   if (_.isPlainObject(row)) {
-    const [CurrentIndent, bracketIndent] = getIndent(depth);
-    const notComparedLines = Object.entries(row).map(([key, val]) => `${CurrentIndent}  ${key}: ${getValue(val, depth + 2)}`);
+    const [currentIndent, bracketIndent] = getIndent(depth);
+    const notComparedLines = Object.entries(row).map(([key, val]) => `${currentIndent}${key}: ${getValue(val, depth + 1)}`);
     return ['{', ...notComparedLines, `${bracketIndent}}`].join('\n');
   }
   return row;
 };
 const stylish = (content) => {
   const iter = (row, depth) => {
-    const [CurrentIndent, bracketIndent] = getIndent(depth);
+    const [currentIndent, bracketIndent] = getIndent(depth);
     const lines = row.map((value) => {
       switch (value.status) {
         case 'changed':
           return [
-            `${CurrentIndent}- ${value.key}: ${getValue(value.deletedValue, depth + 2)}`,
-            `${CurrentIndent}+ ${value.key}: ${getValue(value.addedValue, depth + 2)}`,
+            `${currentIndent.slice(0, -2)}- ${value.key}: ${getValue(value.deletedValue, depth + 1)}`,
+            `${currentIndent.slice(0, -2)}+ ${value.key}: ${getValue(value.addedValue, depth + 1)}`,
           ].join('\n');
         case 'deleted':
-          return `${CurrentIndent}- ${value.key}: ${getValue(value.deletedValue, depth + 2)}`;
+          return `${currentIndent.slice(0, -2)}- ${value.key}: ${getValue(value.deletedValue, depth + 1)}`;
         case 'added':
-          return `${CurrentIndent}+ ${value.key}: ${getValue(value.addedValue, depth + 2)}`;
+          return `${currentIndent.slice(0, -2)}+ ${value.key}: ${getValue(value.addedValue, depth + 1)}`;
         case 'node':
-          return `${CurrentIndent}  ${value.key}: ${iter(value.children, depth + 2)}`;
+          return `${currentIndent}${value.key}: ${iter(value.children, depth + 1)}`;
         case 'unchanged':
-          return `${CurrentIndent}  ${value.key}: ${getValue(value.value, depth + 2)}`;
+          return `${currentIndent}${value.key}: ${getValue(value.value, depth + 1)}`;
         default:
           return new Error(`Unknown status ${value.status}`);
       }
